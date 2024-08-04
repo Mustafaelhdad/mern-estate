@@ -9,7 +9,6 @@ import SignUp from "./pages/SignUp";
 import About from "./pages/About";
 import Profile from "./pages/Profile";
 import Header from "./components/Header";
-import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
