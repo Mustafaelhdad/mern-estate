@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-// import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
 
 function SignUp() {
   const [formDate, setFormData] = useState({});
@@ -17,9 +15,6 @@ function SignUp() {
       [e.target.id]: e.target.value,
     });
   };
-
-  const notify = () => toast("Wow so easy!");
-  // const notify = () => toast.error("Error happened");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,14 +37,8 @@ function SignUp() {
         const errorMessage = err.response?.data?.message || "An error occurred";
 
         setError(errorMessage);
-        // notify();
-        // console.log(err);
       });
   };
-
-  useEffect(() => {
-    // error && notify();
-  }, [error]);
 
   return (
     <div className="p-3 max-w-lg mx-auto">
