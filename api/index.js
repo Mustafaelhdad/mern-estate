@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
 
 import userRouter from "./routes/user-route.js";
 import authRouter from "./routes/auth.route.js";
@@ -13,6 +14,16 @@ mongoose
   .catch((err) => console.log(err));
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "*", // Allow all origins (temporarily for testing)
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow common headers
+    credentials: true, // If you're dealing with cookies or authentication headers
+  })
+);
+
 app.use(express.json());
 
 app.listen(3000, () => {
