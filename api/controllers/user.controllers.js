@@ -3,3 +3,5 @@ export const test = (req, res) => {
     message: "API route is working",
   });
 };
+
+export const updateUser = (req, res, next) => {};
