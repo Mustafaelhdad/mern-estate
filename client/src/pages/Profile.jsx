@@ -7,15 +7,25 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase";
+import {
+  updateUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+} from "../redux/user/userSlice";
+import { useDispatch } from "react-redux";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Profile() {
   const fileRef = useRef(null);
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [uploadFileError, setUploadFileError] = useState(false);
   const [formData, setFormData] = useState({});
-  console.log(formData);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (file) {
@@ -43,17 +53,62 @@ function Profile() {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
-          setFormData({ ...formData, avatar: downloadUrl });
+          setFormData((prev) => ({ ...prev, avatar: downloadUrl }));
+
+          toast.success("Image uploaded successfully!");
         });
       }
     );
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+    dispatch(updateUserStart());
+
+    try {
+      // Get the user ID from the currentUser object
+      const userId = currentUser?._id; // Make sure this matches your user object structure
+
+      // Make a POST request to the update endpoint
+      const response = await fetch(`/api/user/update/${userId}`, {
+        method: "POST",
+        body: JSON.stringify(formData), // Send formData as the request body
+        headers: {
+          "Content-Type": "application/json", // JSON since the form data is already managed
+          // You can add Authorization headers if needed:
+          // Authorization: `Bearer ${token}`
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        dispatch(updateUserSuccess(data));
+        // alert("Profile updated successfully!");
+
+        toast.success("Profile updated successfully!");
+      } else {
+        throw new Error("Failed to update profile");
+      }
+    } catch (error) {
+      dispatch(updateUserFailure(error.message)); // Dispatch failure action
+
+      toast.error("Error updating profile!");
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
+      <ToastContainer />
+
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
 
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           onChange={(e) => setFile(e.target.files[0])}
           type="file"
@@ -62,7 +117,7 @@ function Profile() {
           hidden
         />
         <img
-          src={formData.avatar || currentUser.data.avatar}
+          src={formData.avatar || currentUser.avatar}
           onClick={() => fileRef.current.click()}
           alt="profile"
           className="rounded-full h-24 w-24 cursor-pointer object-cover self-center mt-2"
@@ -82,22 +137,32 @@ function Profile() {
           type="text"
           id="username"
           placeholder="username"
+          defaultValue={currentUser.username}
           className="border p-3 rounded-lg"
+          onChange={(e) => handleChange(e)}
         />
         <input
           type="email"
           id="email"
           placeholder="email"
+          defaultValue={currentUser.email}
           className="border p-3 rounded-lg"
+          onChange={(e) => handleChange(e)}
         />
         <input
           type="password"
           id="password"
           placeholder="password"
           className="border p-3 rounded-lg"
+          onChange={(e) => handleChange(e)}
         />
-        <button className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-          update
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
+        >
+          {loading ? "Loading..." : "Update"}
         </button>
       </form>
 

@@ -34,7 +34,7 @@ export const updateUser = async (req, res, next) => {
       return next(errorHandler(404, "User not found"));
     }
 
-    const { password, ...rest } = updatedUser._doc;
+    const { password, ...rest } = updatedUser?._doc;
 
     res.status(200).json(rest);
   } catch (error) {

@@ -32,8 +32,7 @@ function OAuth() {
         }
       );
 
-      const data = await res;
-      console.log("data", data);
+      const data = await res.data;
 
       dispatch(signInSuccess(data));
       navigate("/");

@@ -40,8 +40,8 @@ function Header() {
             {currentUser ? (
               <img
                 className="rounded-full w-7 h-7 object-cover"
-                src={currentUser.data.avatar}
-                alt={currentUser.data.username}
+                src={currentUser.avatar}
+                alt={currentUser.username}
               />
             ) : (
               <li className="text-slate-700 hover:underline cursor-pointer">
