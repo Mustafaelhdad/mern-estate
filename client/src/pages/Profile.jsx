@@ -8,6 +8,9 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 import {
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
@@ -102,6 +105,36 @@ function Profile() {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+  const handleDeleteUser = async () => {
+    dispatch(deleteUserStart());
+
+    try {
+      // Get the user ID from the currentUser object
+      const userId = currentUser?._id; // Make sure this matches your user object structure
+
+      // Make a DELETE request to the delete endpoint
+      const response = await fetch(`/api/user/delete/${userId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Account deleted successfully!");
+        dispatch(deleteUserSuccess());
+        // Optionally, you can redirect the user or handle any additional logic here
+      } else {
+        throw new Error("Failed to delete account");
+      }
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message)); // Dispatch failure action
+
+      toast.error("Error deleting account!");
+      console.error("Error deleting account:", error);
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <ToastContainer />
@@ -167,7 +200,12 @@ function Profile() {
       </form>
 
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer">Delete account</span>
+        <span
+          className="text-red-700 cursor-pointer"
+          onClick={handleDeleteUser}
+        >
+          Delete account
+        </span>
         <span className="text-red-700 cursor-pointer">Sign out</span>
       </div>
     </div>

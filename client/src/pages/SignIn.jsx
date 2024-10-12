@@ -9,6 +9,9 @@ import {
 } from "../redux/user/userSlice";
 import OAuth from "../components/OAuth";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function SignIn() {
   const [formDate, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
@@ -34,18 +37,20 @@ function SignIn() {
         },
       })
       .then((res) => {
+        toast.success("Logged in successfully!"); // Success toast
         dispatch(signInSuccess(res.data));
         navigate("/");
       })
       .catch((err) => {
         dispatch(signInFailure(err.message));
+        toast.error("Error logging in. Please try again."); // Error toast
       });
   };
 
   return (
     <div className="p-3 max-w-lg mx-auto">
+      <ToastContainer /> {/* Include ToastContainer to display notifications */}
       <h1 className="text-3xl text-center font-semibold my-7">Sign In</h1>
-
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="email"
@@ -70,14 +75,12 @@ function SignIn() {
         </button>
         <OAuth />
       </form>
-
       <div className="flex gap-2 mt-5">
         <p>Dont have an account?</p>
         <Link to={"/sign-up"}>
           <span className="text-blue-600 hover:text-blue-700">Sign Up</span>
         </Link>
       </div>
-
       {error && (
         <div
           className="p-4 my-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
