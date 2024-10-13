@@ -4,7 +4,6 @@ import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
 export const signup = async (req, res, next) => {
-  console.log(req.body);
   const { username, email, password } = req.body;
   const hashedPassword = bcryptjs.hashSync(password, 10);
 
@@ -22,8 +21,6 @@ export const signup = async (req, res, next) => {
 export const signIn = async (req, res, next) => {
   const { email, password } = req.body;
 
-  console.log("singing in is going");
-
   try {
     const validUser = await User.findOne({ email });
     if (!validUser) return next(errorHandler(404, "user not found!"));
@@ -32,8 +29,6 @@ export const signIn = async (req, res, next) => {
 
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
     const { password: hashedPassword, ...rest } = validUser._doc;
-
-    console.log("......");
 
     res
       .cookie("access_token", token, { httpOnly: true })
