@@ -11,6 +11,9 @@ import {
   deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  signOutUserFailure,
+  signOutUserStart,
+  signOutUserSuccess,
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
@@ -135,6 +138,31 @@ function Profile() {
     }
   };
 
+  // New function to handle sign out
+  const handleSignOut = async () => {
+    try {
+      dispatch(signOutUserStart());
+      const response = await fetch("/api/auth/signout", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        dispatch(signOutUserSuccess());
+        toast.success("Signed out successfully!");
+        // window.location.href = "/login";
+      } else {
+        throw new Error("Failed to sign out");
+      }
+    } catch (error) {
+      toast.error("Error signing out!");
+      console.error("Error signing out:", error);
+      dispatch(signOutUserFailure(error.message));
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <ToastContainer />
@@ -206,7 +234,9 @@ function Profile() {
         >
           Delete account
         </span>
-        <span className="text-red-700 cursor-pointer">Sign out</span>
+        <span className="text-red-700 cursor-pointer" onClick={handleSignOut}>
+          Sign out
+        </span>
       </div>
     </div>
   );
