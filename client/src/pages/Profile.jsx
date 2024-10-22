@@ -198,6 +198,34 @@ function Profile() {
     }
   };
 
+  const handleDeleteListing = async (listingId) => {
+    try {
+      if (!currentUser || !currentUser._id) {
+        throw new Error("User not found.");
+      }
+
+      const response = await fetch(`/api/listing/delete/${listingId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete listing.");
+      }
+
+      // Notify user of success
+      toast.success("Listing deleted successfully!");
+
+      // Re-fetch listings to update the UI
+      handleShowListings();
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+      toast.error("Error deleting listing!");
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <ToastContainer />
@@ -311,7 +339,12 @@ function Profile() {
               </Link>
 
               <div className="flex flex-col items-center">
-                <button className="text-red-700 uppercase">delete</button>
+                <button
+                  onClick={() => handleDeleteListing(listing._id)}
+                  className="text-red-700 uppercase"
+                >
+                  delete
+                </button>
                 <button className="text-green-700 uppercase">edit</button>
               </div>
             </div>
