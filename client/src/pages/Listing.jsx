@@ -17,14 +17,18 @@ import {
   FaParking,
   FaShare,
 } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import Contact from "../components/Contact";
 
 function Listing() {
   const params = useParams();
+  const { currentUser } = useSelector((state) => state.user);
 
   const [listingData, setListingData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [contact, setContact] = useState(false);
 
   const getListingData = async () => {
     try {
@@ -140,6 +144,19 @@ function Listing() {
                 {listingData.furnished ? "Furnished" : "Unfurnished"}
               </li>
             </ul>
+
+            {currentUser &&
+              currentUser._id !== listingData.userRef &&
+              !contact && (
+                <button
+                  onClick={() => setContact(true)}
+                  className="bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3"
+                >
+                  contact landlord
+                </button>
+              )}
+
+            {contact && <Contact listing={listingData} />}
           </div>
         </>
       )}
