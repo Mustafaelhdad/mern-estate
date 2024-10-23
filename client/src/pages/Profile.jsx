@@ -171,8 +171,6 @@ function Profile() {
         throw new Error("User not found.");
       }
 
-      console.log("user id is", currentUser._id);
-
       // Make the API request to fetch listings
       const response = await fetch(`/api/user/listings/${currentUser._id}`, {
         method: "GET",
@@ -181,8 +179,6 @@ function Profile() {
         },
       });
 
-      console.log("response is", response);
-
       if (!response.ok) {
         throw new Error("Failed to fetch listings.");
       }
@@ -190,8 +186,6 @@ function Profile() {
       const listings = await response.json();
 
       setListings(listings);
-
-      console.log("User listings:", listings);
     } catch (error) {
       console.error("Error fetching user listings:", error);
       toast.error("Error fetching listings!");
