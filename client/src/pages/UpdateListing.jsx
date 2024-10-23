@@ -183,7 +183,7 @@ function UpdateListing() {
         });
         setFiles([]);
 
-        navigate(`/listing/${params.listingId}`);
+        navigate(`/listings/${params.listingId}`);
       } else {
         const errorData = await response.json();
         toast.error(`Error: ${errorData.message}`);
